@@ -15,23 +15,39 @@ const isDayTime = (icon) => {
 
   }
 
+  const key = '9a8433a78ecb568065c286b0583bc2c1';
+
   const requestCity = async (city) => {
+    console.log(city)
     const baseURL = 'http://api.openweathermap.org/data/2.5/weather'
     const query = `?q=${city}&appid=${key}`;
   
     //make fetch call (promise call)
-    const response = await fetch(baseURL + query);
+    fetch(baseURL + query).then((response)=>{
+      return response.json()
+    }).then((data)=>{
+      console.log(data)
+      updateWeatherApp(data)
+    });
   
     //promise data
-    const data = await response.json();
-    return data;
+    // const data = await response.json();
+    // return data;
   
   }
 
-updateWeatherApp = (city) => {
+  updateWeatherApp = (city) => {
     console.log(city);
+
+    // Check if city object has 'weather' property
+    if (!city.weather || city.weather.length === 0) {
+        console.error('Weather data not available.');
+        return;
+    }
+
     const imageName = city.weather[0].icon;
-    const iconSrc = `http://openweathermap.org/img/wn/${imageName}@2x.png`
+    const iconSrc = `http://openweathermap.org/img/wn/${imageName}@2x.png`;
+
     cityName.textContent = city.name;
     cardBody.innerHTML = `
     <div class="card-mid row">
@@ -60,39 +76,41 @@ updateWeatherApp = (city) => {
           </div>
     `;
     if (isDayTime(imageName)) {
-        console.log('day');
-        timeImage.setAttribute('src', 'img/day_image.svg');
-        if (cityName.classList.contains('text-white')) {
-            cityName.classList.remove('text-white');
-        } else {
-            cityName.classList.add('text-black');
-        }
+      console.log('day');
+      timeImage.setAttribute('src', 'img/day_image.svg');
+      if (cityName.classList.contains('text-white')) {
+          cityName.classList.remove('text-white');
+      } else {
+          cityName.classList.add('text-black');
+      }
+  } else {
+      console.log('night');
+      timeImage.setAttribute('src', 'img/night_image.svg');
+      if (cityName.classList.contains('text-black')) {
+          cityName.classList.remove('text-black');
+      } else {
+          cityName.classList.add('text-white');
+      }
+  }
 
-    } else {
-        console.log('night');
-        timeImage.setAttribute('src', 'img/night_image.svg');
-        if (cityName.classList.contains('text-black')) {
-            cityName.classList.remove('text-black');
-        } else {
-            cityName.classList.add('text-white');
-        }
-
-    }
-
-    cardInfo.classList.remove('d-none');
+  cardInfo.classList.remove('d-none');
 }
 
 
-//add an event listner to the form
-searchForm.addEventListener('submit', e => {
-    e.preventDefault();
-    const citySearched = cityValue.value.trim();
-    console.log(citySearched);
-    searchForm.reset();
+// add an event listener to the form
+searchForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const citySearched = cityValue.value.trim();
+  console.log(citySearched);
+  searchForm.reset();
 
-    let data=requestCity(citySearched)
-    updateWeatherApp(data);
+  try {
+      let data = await requestCity(citySearched);
+      updateWeatherApp(data);
+  } catch (error) {
+      console.error('Error fetching data:', error);
+      // Handle the error as needed
+  }
+});
 
-})
-const key = '9a8433a78ecb568065c286b0583bc2c1';
 
