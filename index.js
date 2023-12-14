@@ -19,7 +19,7 @@ const isDayTime = (icon) => {
 
   const requestCity = async (city) => {
     console.log(city)
-    const baseURL = 'http://api.openweathermap.org/data/2.5/weather'
+    const baseURL = 'https://api.openweathermap.org/data/2.5/weather'
     const query = `?q=${city}&appid=${key}`;
   
     //make fetch call (promise call)
@@ -30,9 +30,9 @@ const isDayTime = (icon) => {
       updateWeatherApp(data)
     });
   
-    //promise data
-    // const data = await response.json();
-    // return data;
+    console.log(query);
+    console.log(city);
+
   
   }
 
