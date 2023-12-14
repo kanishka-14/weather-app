@@ -1,2 +1,4 @@
 weatherapp.code-workspace
 weather-app-js.code-workspace
+.gitignore
+.DS_Store
